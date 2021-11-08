@@ -1,47 +1,95 @@
 <template>
-  <v-simple-table>
-    <template>
-      <thead>
-        <tr>
-          <th class="text-cneter">번호</th>
-          <th class="text-left">제목</th>
-          <th class="text-left">작성자</th>
-          <th class="text-left">작성일</th>
-          <th class="text-left">조회수</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="board in boardList" :key="board.bno">
-          <td>{{ board.bno }}</td>
-          <td>{{ board.btitle }}</td>
-          <td>{{ board.mid }}</td>
-          <td>{{ new Date(board.bdate).toLocaleString()}}</td>
-          <td>{{ board.bhitcount }}</td>
-        </tr>
-      </tbody>
-    </template>
-  </v-simple-table>
+  <div>
+    <v-simple-table>
+      <template>
+        <thead>
+          <tr>
+            <th class="text-cneter">번호</th>
+            <th class="text-left">제목</th>
+            <th class="text-left">작성자</th>
+            <th class="text-left">작성일</th>
+            <th class="text-left">조회수</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="board in boardList" :key="board.bno">
+            <td>{{ board.bno }}</td>
+            <td>{{ board.btitle }}</td>
+            <td>{{ board.mid }}</td>
+            <td>{{ new Date(board.bdate).toLocaleString() }}</td>
+            <td>{{ board.bhitcount }}</td>
+          </tr>
+        </tbody>
+      </template>
+    </v-simple-table>
+    <v-divider />
+    <div class = "mt-2 text-center">
+      <v-btn color="primary" class="mr-1" outlined @click="changePage(1)">처음</v-btn>
+      <v-btn v-if="beforeFlag" color="success" class="mr-1" outlined @click="changePage(pager['startPageNo']-1)">이전</v-btn>
+      <v-btn color="secondary" :outlined="i !== pager.pageNo" v-for="i in idexList" 
+        :key="i" class="mr-1 " @click="changePage(i)">
+        {{i}}
+      </v-btn>
+      <v-btn  v-if="nextFlag" color="success" class="mr-1" outlined @click="changePage(pager['endPageNo']+1)">다음</v-btn>
+      <v-btn color="primary" @click="changePage(pager['totalPageNo'])" outlined>마지막</v-btn>
+    </div>
+  </div>
 </template>
 
 <script>
-import board from '@/apis/board'
+import board from "@/apis/board";
 export default {
   data: () => ({
-    boardList : []
+    boardList: [],
+    pager : null,
+    idexList : null,
+    nextFlag : true,
+    beforeFlag : true
   }),
-  methods : {
-    async getList(pageNo){
-      try{
+  methods: {
+    async getList(pageNo) {
+      try {
         const response = await board.boardList(pageNo);
-        console.log(response.data.boardList)
         this.boardList = response.data.boardList;
-      }catch(error){
+        this.pager = response.data.pager;
+        this.idexList = this.createArray(this.pager['startPageNo'],this.pager['endPageNo']);
+
+        if(this.pager['groupNo'] == 1){
+          this.beforeFlag = false;
+        }else{
+          this.beforeFlag = true;
+        }
+        if(this.pager['groupNo'] == this.pager['totalGroupNo']){
+          this.nextFlag = false;
+        }else{
+          this.nextFlag = true;
+        }
+      } catch (error) {
         console.log(error);
       }
+    },
+    changePage(pageNo){
+      this.$router.push(`/board/list?pageNo=${pageNo}`).catch(()=>{});
+    },
+    createArray(startNo,endNo){
+      let result = [];
+      for(let i = startNo; i <= endNo; i++){
+        result.push(i);
+      }
+      return result;
     }
   },
-  created(){
+  created() {
     this.getList(this.$route.query.pageNo);
+  },
+  watch : {
+    $route(to){
+      if(to.query.pageNo){
+        this.getList(to.query.pageNo);
+      }else{
+        this.getList(1);
+      }
+    }
   }
 };
 </script>
