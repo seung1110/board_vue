@@ -33,6 +33,9 @@
       <v-btn  v-if="nextFlag" color="success" class="mr-1" outlined @click="changePage(pager['endPageNo']+1)">다음</v-btn>
       <v-btn color="primary" @click="changePage(pager['totalPageNo'])" outlined>마지막</v-btn>
     </div>
+    <div class="text-right">
+      <v-btn color="primary">작성</v-btn>
+    </div>
   </div>
 </template>
 

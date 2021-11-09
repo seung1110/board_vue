@@ -50,6 +50,7 @@ export default new Vuex.Store({
       sessionStorage.removeItem("authToken");
       context.commit("setUserId","");
       context.commit("setAuthToken","");
+      axiosConfig.removeAuthHeader();
     }
   },
   modules: {},
