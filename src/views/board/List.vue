@@ -4,20 +4,20 @@
       <template>
         <thead>
           <tr>
-            <th class="text-cneter">번호</th>
+            <th class="text-left">번호</th>
             <th class="text-left">제목</th>
-            <th class="text-left">작성자</th>
-            <th class="text-left">작성일</th>
-            <th class="text-left">조회수</th>
+            <th class="text-center">작성자</th>
+            <th class="text-center">작성일</th>
+            <th class="text-center">조회수</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="board in boardList" :key="board.bno">
-            <td>{{ board.bno }}</td>
+          <tr v-for="board in boardList" :key="board.bno" @click="readBoard(board.bno)">
+            <td class="text-left">{{ board.bno }}</td>
             <td>{{ board.btitle }}</td>
-            <td>{{ board.mid }}</td>
-            <td>{{ new Date(board.bdate).toLocaleString() }}</td>
-            <td>{{ board.bhitcount }}</td>
+            <td class="text-center">{{ board.mid }}</td>
+            <td class="text-center">{{ new Date(board.bdate).toLocaleString() }}</td>
+            <td class="text-center">{{ board.bhitcount }}</td>
           </tr>
         </tbody>
       </template>
@@ -77,6 +77,9 @@ export default {
         result.push(i);
       }
       return result;
+    },
+    readBoard(bno){
+      this.$router.push(`/board/detail?bno=${bno}`);
     }
   },
   created() {
